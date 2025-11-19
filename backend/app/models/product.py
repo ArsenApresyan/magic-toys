@@ -3,6 +3,7 @@ from datetime import datetime
 from app.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List, Optional
+from app.models.product_media import ProductMedia
 
 class Product(Base):
     __tablename__ = "products"
@@ -22,3 +23,4 @@ class Product(Base):
     baskets: Mapped[List["Basket"]] = relationship("Basket", back_populates="product")
     wishlists: Mapped[List["Wishlist"]] = relationship("Wishlist", back_populates="product")
     order_items: Mapped[List["OrderItem"]] = relationship("OrderItem", back_populates="product")
+    media: Mapped[List["ProductMedia"]] = relationship("ProductMedia", back_populates="product", cascade="all, delete-orphan")

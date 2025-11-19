@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional, List
 from app.schemas.user import UserResponse
+from app.schemas.product_media import ProductMediaResponse
 
 class ProductBase(BaseModel):
     name: str
@@ -25,6 +26,6 @@ class ProductResponse(ProductBase):
     created_by: Optional[UserResponse] = None
     created_at: datetime
     updated_at: datetime
-    
+    media: Optional[List[ProductMediaResponse]] = None
     class Config:
         from_attributes = True

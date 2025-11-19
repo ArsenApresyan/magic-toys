@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from typing import List
+from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile, Form
+from typing import List, Optional
 from app.schemas.product import ProductCreate, ProductUpdate, ProductResponse
+from app.schemas.product_media import ProductMediaResponse
 from app.services.product_service import ProductService
 from app.core.dependencies import get_product_service, get_current_user
 from app.models.user import User
 
-router = APIRouter(prefix="/products", tags=["products"])
+router = APIRouter()
 
 @router.get("/", response_model=List[ProductResponse])
 async def list_products(
@@ -16,6 +17,16 @@ async def list_products(
     """Get all products with pagination"""
     products = await service.get_products(skip=skip, limit=limit)
     return products
+
+@router.get("/media", response_model=List[ProductMediaResponse])
+async def list_all_media(
+    skip: int = 0,
+    limit: int = 100,
+    service: ProductService = Depends(get_product_service)
+):
+    """Get all product media records across all products"""
+    media_records = await service.get_all_media(skip=skip, limit=limit)
+    return media_records
 
 @router.get("/{product_id}", response_model=ProductResponse)
 async def get_product(
@@ -31,14 +42,36 @@ async def get_product(
         )
     return product
 
-@router.post("/", response_model=ProductResponse, status_code=status.HTTP_201_CREATED)
+@router.get("/{product_id}/media", response_model=List[ProductMediaResponse])
+async def get_product_media(
+    product_id: int,
+    service: ProductService = Depends(get_product_service)
+):
+    """Get all media records for a specific product"""
+    media_records = await service.get_product_media(product_id)
+    return media_records
+
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_product(
-    product_data: ProductCreate,
+ # Use Form() for each field instead of ProductCreate object
+    name: str = Form(..., description="Product name"),
+    description: str = Form(..., description="Product description"),
+    price: float = Form(..., description="Product price"),
+    is_active: bool = Form(True, description="Whether the product is active"),
+    # File uploads
+    images: List[UploadFile] = File(default=[], description="Product images"),
     current_user: User = Depends(get_current_user),
     service: ProductService = Depends(get_product_service)
 ):
+    # Create ProductCreate object from Form fields
+    product_data = ProductCreate(
+        name=name,
+        description=description,
+        price=price,
+        is_active=is_active
+    )
     """Create a new product"""
-    product = await service.create_product(product_data, created_by_id=current_user.id)
+    product = await service.create_product_with_media(product_data, created_by_id=current_user.id, images=images)
     return product
 
 @router.put("/{product_id}", response_model=ProductResponse)

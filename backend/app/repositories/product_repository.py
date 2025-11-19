@@ -20,12 +20,15 @@ class ProductRepository:
         await self.db.refresh(product)
         # Reload with relationship to include created_by
         return await self.get_by_id(product.id)
-    
+
     async def get_by_id(self, product_id: int) -> Optional[ProductModel]:
         """Get product by ID"""
         result = await self.db.execute(
             select(ProductModel)
-            .options(selectinload(ProductModel.created_by))
+            .options(
+                selectinload(ProductModel.created_by),
+                selectinload(ProductModel.media)
+            )
             .where(ProductModel.id == product_id)
         )
         return result.scalar_one_or_none()
@@ -34,7 +37,10 @@ class ProductRepository:
         """Get all products with pagination"""
         result = await self.db.execute(
             select(ProductModel)
-            .options(selectinload(ProductModel.created_by))
+            .options(
+                selectinload(ProductModel.created_by),
+                selectinload(ProductModel.media)
+            )
             .offset(skip)
             .limit(limit)
         )

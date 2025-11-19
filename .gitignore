@@ -5,7 +5,11 @@ backend/.env
 
 # Python
 __pycache__/
+**/__pycache__/
 *.py[cod]
+*.pyc
+*.pyo
+*.pyd
 *$py.class
 *.so
 .Python
@@ -13,6 +17,10 @@ venv/
 env/
 ENV/
 .venv
+*.egg-info/
+dist/
+build/
+*.egg
 
 # IDE
 .vscode/
