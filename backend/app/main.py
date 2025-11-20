@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.api.v1 import auth, users, products
-
+from fastapi.middleware.cors import CORSMiddleware
 # FastAPI app
 app = FastAPI(
     title="E-Commerce API",
@@ -18,3 +18,12 @@ async def read_root():
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(users.router, prefix="/users", tags=["users"])
 app.include_router(products.router, prefix="/products", tags=["products"])
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
