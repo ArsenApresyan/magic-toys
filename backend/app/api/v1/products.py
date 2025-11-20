@@ -78,10 +78,11 @@ async def create_product(
 async def update_product(
     product_id: int,
     product_data: ProductUpdate,
+    current_user: User = Depends(get_current_user),
     service: ProductService = Depends(get_product_service)
 ):
     """Update a product"""
-    product = await service.update_product(product_id, product_data)
+    product = await service.update_product(product_id, product_data, updated_by_id=current_user.id)
     if not product:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

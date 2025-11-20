@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from fastapi.openapi.utils import get_openapi
 from app.api.v1 import auth, users, products
 
 # FastAPI app

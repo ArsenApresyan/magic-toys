@@ -22,6 +22,8 @@ class ProductUpdate(BaseModel):
 
 class ProductResponse(ProductBase):
     id: int
+    updated_by_id: Optional[int] = None
+    updated_by: Optional[UserResponse] = None
     created_by_id: Optional[int] = None
     created_by: Optional[UserResponse] = None
     created_at: datetime

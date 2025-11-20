@@ -48,9 +48,9 @@ class ProductService:
         products = await self.repository.get_all(skip=skip, limit=limit)
         return [ProductResponse.model_validate(product) for product in products]
     
-    async def update_product(self, product_id: int, product_data: ProductUpdate) -> Optional[ProductResponse]:
+    async def update_product(self, product_id: int, product_data: ProductUpdate, updated_by_id: Optional[int] = None) -> Optional[ProductResponse]:
         """Update a product"""
-        product = await self.repository.update(product_id, product_data)
+        product = await self.repository.update(product_id, product_data, updated_by_id=updated_by_id)
         if not product:
             return None
         return ProductResponse.model_validate(product)

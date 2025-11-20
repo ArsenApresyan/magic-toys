@@ -4,7 +4,7 @@ from sqlalchemy.orm import selectinload
 from typing import List, Optional
 from app.models.product import Product as ProductModel
 from app.schemas.product import ProductCreate, ProductUpdate
-
+from datetime import datetime
 class ProductRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
@@ -46,20 +46,26 @@ class ProductRepository:
         )
         return result.scalars().all()
     
-    async def update(self, product_id: int, product_data: ProductUpdate) -> Optional[ProductModel]:
+    async def update(self, product_id: int, product_data: ProductUpdate, updated_by_id: Optional[int] = None) -> Optional[ProductModel]:
         """Update a product"""
         product = await self.get_by_id(product_id)
         if not product:
             return None
         
-        # Update only provided fields
+        # Update only provided fields (exclude_unset=True means only fields that were explicitly set)
         update_data = product_data.model_dump(exclude_unset=True)
+        if updated_by_id is not None:
+            update_data["updated_by_id"] = updated_by_id
+            
+        # Set each field individually
         for field, value in update_data.items():
             setattr(product, field, value)
         
+        product.updated_at = datetime.now()
         await self.db.commit()
         await self.db.refresh(product)
-        return product
+        # Reload with relationships to ensure we have the latest data
+        return await self.get_by_id(product_id)
     
     async def delete(self, product_id: int) -> bool:
         """Delete a product"""
