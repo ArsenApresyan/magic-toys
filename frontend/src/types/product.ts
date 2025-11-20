@@ -1,0 +1,36 @@
+// Type definitions for Product based on backend ProductResponse schema
+
+export interface User {
+    id: number;
+    email: string;
+    name: string;
+    picture?: string;
+    is_active: boolean;
+    is_superuser: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ProductMedia {
+    id: number;
+    product_id: number;
+    s3_url: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Product {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    is_active: boolean;
+    created_by_id?: number | null;
+    created_by?: User | null;
+    updated_by_id?: number | null;
+    updated_by?: User | null;
+    created_at: string;
+    updated_at: string;
+    media?: ProductMedia[] | null;
+}
+
