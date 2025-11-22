@@ -4,18 +4,9 @@ import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { googleLogin, googleCallback, getCurrentUser } from '../api/auth';
 import { getToken, setToken, removeToken } from '../utils/token';
-import type { User } from '../types/product';
+import type { User } from '../types/user';
+import type { AuthContextType } from '../types/auth';
 
-interface AuthContextType {
-    user: User | null;
-    isAuthenticated: boolean;
-    loading: boolean;
-    error: string | null;
-    initiateLogin: () => Promise<void>;
-    handleCallback: (code: string, state: string) => Promise<void>;
-    logout: () => void;
-    checkAuth: () => Promise<void>;
-}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

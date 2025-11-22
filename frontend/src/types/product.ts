@@ -1,16 +1,6 @@
 // Type definitions for Product based on backend ProductResponse schema
 
-export interface User {
-    id: number;
-    email: string;
-    name: string;
-    picture?: string;
-    is_active: boolean;
-    is_superuser: boolean;
-    created_at: string;
-    updated_at: string;
-}
-
+import type { User } from "./user";
 export interface ProductMedia {
     id: number;
     product_id: number;
