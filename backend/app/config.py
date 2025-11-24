@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     secret_key: Optional[str] = Field(default=None, env="SECRET_KEY")
     algorithm: Optional[str] = Field(default=None, env="ALGORITHM")
     access_token_expire_minutes: Optional[int] = Field(default=None, env="ACCESS_TOKEN_EXPIRE_MINUTES")
+    refresh_token_expire_days: Optional[int] = Field(default=30, env="REFRESH_TOKEN_EXPIRE_DAYS")
     debug: Optional[bool] = Field(default=False, env="DEBUG")
     # cors_origins: Optional[list[str]] = Field(default=None, env="CORS_ORIGINS")
     

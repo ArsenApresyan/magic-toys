@@ -1,6 +1,7 @@
 // Type definitions for Product based on backend ProductResponse schema
 
 import type { User } from "./user";
+
 export interface ProductMedia {
     id: number;
     product_id: number;
@@ -22,5 +23,14 @@ export interface Product {
     created_at: string;
     updated_at: string;
     media?: ProductMedia[] | null;
+}
+
+// Form data types for creating/updating products
+export interface ProductFormData {
+    name: string;
+    description: string;
+    price: number;
+    is_active: boolean;
+    images?: File[];
 }
 

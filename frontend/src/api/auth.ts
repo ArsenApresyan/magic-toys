@@ -18,3 +18,10 @@ export const getCurrentUser = async () => {
     const response = await api.get('/users/me');
     return response.data;
 };
+
+export const refreshAccessToken = async (refreshToken: string) => {
+    const response = await api.post('/auth/refresh', {
+        refresh_token: refreshToken
+    });
+    return response.data;
+};

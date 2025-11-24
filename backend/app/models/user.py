@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from datetime import datetime
 from app.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import List
+from typing import List, Optional
 
 #for google oauth2 we need to have all necessary fields for the user like email, name, picture, etc use Mapped and mapped_column instead of Column  
 class User(Base):
@@ -14,6 +14,8 @@ class User(Base):
     picture: Mapped[str] = mapped_column(String)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
+    refresh_token: Mapped[Optional[str]] = mapped_column(String, nullable=True, index=True)
+    refresh_token_expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     

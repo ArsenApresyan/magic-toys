@@ -103,6 +103,15 @@ export default function Header() {
                                             <p className="text-sm font-medium text-gray-900">{user.name}</p>
                                             <p className="text-xs text-gray-500">{user.email}</p>
                                         </div>
+                                        {user.is_superuser && (
+                                            <Link
+                                                to="/admin"
+                                                onClick={() => setShowDropdown(false)}
+                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                            >
+                                                Admin Dashboard
+                                            </Link>
+                                        )}
                                         <button
                                             onClick={() => {
                                                 logout();

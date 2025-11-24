@@ -6,6 +6,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import Optional, List
+from datetime import datetime
 from app.models.user import User
 
 class UserRepository:
@@ -47,4 +48,33 @@ class UserRepository:
             return False
         self.db.delete(user)
         await self.db.commit()
+        return True
+    
+    async def update_user_refresh_token(self, user_id: int, refresh_token: str, expires_at: datetime) -> Optional[User]:
+        """Update user's refresh token and expiration"""
+        user = await self.get_user_by_id(user_id)
+        if not user:
+            return None
+        user.refresh_token = refresh_token
+        user.refresh_token_expires_at = expires_at
+        await self.db.commit()
+        await self.db.refresh(user)
+        return user
+    
+    async def get_user_by_refresh_token(self, refresh_token: str) -> Optional[User]:
+        """Find user by refresh token"""
+        result = await self.db.execute(
+            select(User).where(User.refresh_token == refresh_token)
+        )
+        return result.scalar_one_or_none()
+    
+    async def revoke_refresh_token(self, user_id: int) -> bool:
+        """Revoke user's refresh token by setting it to None"""
+        user = await self.get_user_by_id(user_id)
+        if not user:
+            return False
+        user.refresh_token = None
+        user.refresh_token_expires_at = None
+        await self.db.commit()
+        await self.db.refresh(user)
         return True

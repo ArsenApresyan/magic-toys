@@ -93,6 +93,7 @@ async def update_product(
 @router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_product(
     product_id: int,
+    current_user: User = Depends(get_current_user),
     service: ProductService = Depends(get_product_service)
 ):
     """Delete a product"""
