@@ -18,9 +18,11 @@ export default function ProductList() {
         try {
             setDeletingId(id);
             await deleteProductMutation.mutateAsync(id);
-        } catch (err) {
+            // Success - React Query will automatically refetch the list
+        } catch (err: any) {
             console.error('Failed to delete product:', err);
-            alert('Failed to delete product. Please try again.');
+            const errorMessage = err?.response?.data?.detail || err?.message || 'Failed to delete product. Please try again.';
+            alert(errorMessage);
         } finally {
             setDeletingId(null);
         }

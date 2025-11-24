@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { googleLogin, googleCallback, getCurrentUser } from '../api/auth';
-import { getToken, setToken, removeToken } from '../utils/token';
+import { getToken, setToken, getRefreshToken, setRefreshToken, removeToken } from '../utils/token';
 import type { User } from '../types/user';
 import type { AuthContextType } from '../types/auth';
 
@@ -34,8 +34,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }, []);
 
     const checkAuth = async () => {
+        // Skip auth check if we're on login page
+        if (window.location.pathname === '/login' || window.location.pathname === '/auth/login') {
+            setLoading(false);
+            return;
+        }
+        
         const token = getToken();
-        if (!token) {
+        const refreshToken = getRefreshToken();
+        
+        // If no tokens at all, user is not authenticated
+        if (!token && !refreshToken) {
             setLoading(false);
             return;
         }
@@ -47,6 +56,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             setError(null);
         } catch (err) {
             // Token is invalid, clear it
+            // The axios interceptor will handle refresh automatically
             removeToken();
             setUser(null);
         } finally {
@@ -100,10 +110,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             
             // Exchange code for token (backend validates state here)
             const response = await googleCallback(code, state);
-            const { access_token } = response;
+            const { access_token, refresh_token } = response;
             
-            // Store token
+            // Store tokens
             setToken(access_token);
+            if (refresh_token) {
+                setRefreshToken(refresh_token);
+            }
             
             // Fetch user info
             const userData = await getCurrentUser();

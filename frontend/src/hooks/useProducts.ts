@@ -67,9 +67,14 @@ export const useDeleteProduct = () => {
     
     return useMutation({
         mutationFn: (id: number) => deleteProduct(id),
-        onSuccess: () => {
-            // Invalidate products list
+        onSuccess: (_, deletedId) => {
+            // Remove the deleted product from cache
+            queryClient.removeQueries({ queryKey: productKeys.detail(deletedId) });
+            // Invalidate and refetch products list
             queryClient.invalidateQueries({ queryKey: productKeys.lists() });
+        },
+        onError: (error) => {
+            console.error('Delete product error:', error);
         },
     });
 };

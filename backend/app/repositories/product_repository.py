@@ -1,8 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.orm import selectinload
 from typing import List, Optional
 from app.models.product import Product as ProductModel
+from app.models.product_media import ProductMedia as ProductMediaModel
 from app.schemas.product import ProductCreate, ProductUpdate
 from datetime import datetime
 class ProductRepository:
@@ -69,10 +70,20 @@ class ProductRepository:
     
     async def delete(self, product_id: int) -> bool:
         """Delete a product"""
+        # Get product with media loaded
         product = await self.get_by_id(product_id)
         if not product:
             return False
         
-        self.db.delete(product)
+        # Delete related media first (explicit delete to ensure it works)
+        # The cascade should handle this, but explicit delete is more reliable
+        media_delete_stmt = delete(ProductMediaModel).where(ProductMediaModel.product_id == product_id)
+        await self.db.execute(media_delete_stmt)
+        
+        # Now delete the product
+        product_delete_stmt = delete(ProductModel).where(ProductModel.id == product_id)
+        result = await self.db.execute(product_delete_stmt)
         await self.db.commit()
-        return True
+        
+        # Return True if a row was deleted
+        return result.rowcount > 0

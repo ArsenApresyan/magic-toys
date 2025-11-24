@@ -15,7 +15,14 @@ class GoogleAuthResponse(BaseModel):
     state: str  # State token for CSRF protection
 
 class TokenResponse(BaseModel):
-    """Response containing JWT access token"""
+    """Response containing JWT access token and refresh token"""
     access_token: str
+    refresh_token: str
     token_type: str = "Bearer"
     expires_in: int
+    refresh_token_expires_in: int
+
+
+class RefreshTokenRequest(BaseModel):
+    """Request body for refresh token endpoint"""
+    refresh_token: str

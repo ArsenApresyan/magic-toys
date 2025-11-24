@@ -63,5 +63,7 @@ export const updateProduct = async (id: number, data: ProductUpdateData): Promis
 
 // DELETE - Delete product
 export const deleteProduct = async (id: number): Promise<void> => {
-    await api.delete(`/products/${id}`);
+    const response = await api.delete(`/products/${id}`);
+    // HTTP 204 No Content returns empty response, which is expected
+    return;
 };
